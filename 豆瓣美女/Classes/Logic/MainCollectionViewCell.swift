@@ -19,15 +19,6 @@ class MainCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         addSubview(imageView)
         imageView.frame = bounds
-        imageView.contentMode = .ScaleAspectFit
-        
-//        imageView.layer.borderWidth = 1.0
-//        imageView.layer.borderColor = UIColor.grayColor().CGColor
-//        imageView.layer.cornerRadius = 6.0
-//        imageView.layer.shadowColor = UIColor.grayColor().CGColor
-//        imageView.layer.shadowOffset = CGSizeMake(2, 2)
-//        imageView.layer.shadowOpacity = 1
-//        imageView.layer.shadowRadius = 2.0
-//        imageView.layer.masksToBounds = true
+        imageView.contentMode = .ScaleAspectFill
     }
 }

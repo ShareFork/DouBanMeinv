@@ -25,19 +25,19 @@ import JGProgressHUD
 import SDWebImage
 
 private let reuseIdentifier = "Cell"
-private let imageBaseUrl = "http://www.dbmeinv.com/dbgroup/rank.htm?pager_offset="
-private let pageBaseUrl = "http://www.dbmeinv.com/dbgroup/show.htm?cid="
+
 class MainCollectionController: UICollectionViewController, UICollectionViewDelegateFlowLayout, TopMenuDelegate{
     
-    var photos = NSMutableOrderedSet()
-    var photosBig = NSMutableOrderedSet()
-    //    var layout: MainCollectionViewLayout?
-    var populatingPhotos = false //是否在获取图片
-    var currentPage = 1 //当前页数
-    var isGot = false   //标志是否已经获取到数据
-    var menuView:ZNTopMenuView!
-    var currentType: PageType = .daxiong
+    var photos                = NSMutableOrderedSet()//缩略图
+    var photosBig             = NSMutableOrderedSet()//大图
+
+    var populatingPhotos      = false//是否在获取图片
+    var currentPage           = 1//当前页数
+    var isGot                 = false//标志是否已经获取到数据
+    var menuView:ZNTopMenuView! //滑动菜单
+    var currentType: PageType = .daxiong//当前页面类型
     
+    //MARK: - UI初始化
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -47,8 +47,7 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
         
         //初始化滑动栏
         initTop()
-        //        initPageBaseUrl()
-        getPageUrl()
+
         //设置视图
         setupView()
         
@@ -57,11 +56,9 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
         
         //获取第一页图片
         populatePhotos()
-        //        self.collectionView?.header.beginRefreshing()
     }
     
     override func viewWillAppear(animated: Bool) {
-        
         self.navigationController?.setToolbarHidden(true, animated: false)
     }
     
@@ -69,32 +66,36 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
         return pageBaseUrl + currentType.rawValue + "&pager_offset=" + "\(currentPage)"
     }
     /*!
-    case qingchun = "qingchun" //1
-    case xiaohua  = "xiaohua"  //2
-    case chemo    = "chemo"    //3
-    case qipao    = "qipao"    //4
-    case mingxing = "mingxing" //5
-    case xinggan  = "xinggan" //6
+    case daxiong = "2"
+    case qiaotun = "6"
+    case heisi   = "7"
+    case meitui  = "3"
+    case yanzhi  = "4"
+    case dazahui = "5"
     */
+    //MARK: 设置滑动菜单
     func initTop(){
         let navBarHeight = self.navigationController?.navigationBar.frame.height ?? 0.0
         
         //设置menu的高度和位置，在navigationbar下面
         let menuView = ZNTopMenuView(frame: CGRectMake(0, navBarHeight + topViewHeight - 10, kScreenSize.width, topViewHeight))
-        
+        /*!
+        设置滑动菜单的背景颜色和下划线颜色
+        */
         menuView.bgColor = UIColor.whiteColor()
         menuView.lineColor = UIColor.grayColor()
         menuView.delegate = self
         //设置显示的类别
         menuView.titles = ["大胸妹", "小翘臀", "黑丝袜", "美腿控", "有颜值", "大杂烩"]
 
+        
         //关闭scrolltotop，不然点击status bar不会返回第一页
         menuView.setScrollToTop(false)
         self.menuView = menuView
         self.view.addSubview(menuView)
     }
     
-    //MARK: - TopMenuDelegate 代理方法，点击触发
+    //MARK: TopMenuDelegate 代理方法，点击触发
     func topMenuDidChangedToIndex(index:Int){
         self.navigationItem.title = self.menuView.titles[index] as String
         
@@ -110,6 +111,7 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
         populatePhotos()//开始获取图片url，由于不是自己搭建的服务器，所以只能抓取HTML进行解析
     }
     
+    //MARK: 上拉下拉刷新
     func configureRefresh(){
         self.collectionView?.header = MJRefreshNormalHeader(refreshingBlock: { () in
             print("header")
@@ -130,24 +132,16 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
     }
     
     func setupView() {
-        //设置标题
+        //设置标题和颜色
         self.navigationItem.title = "豆瓣美女"
         self.view.backgroundColor = UIColor.whiteColor()
-        self.navigationController?.navigationBar.barTintColor = UIColor(red: 63/255, green: 81/255, blue: 181/255, alpha: 0)
+        self.navigationController?.navigationBar.barTintColor = UIColor.naviColor()
         self.collectionView?.backgroundColor = UIColor.whiteColor()
         self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName:UIColor.whiteColor()]
         self.collectionView?.scrollsToTop = true
+        
+        //设置UICollectionViewFlowLayout
         self.collectionView?.frame = CGRectMake(10, 0, self.view.frame.width - 20, self.view.frame.height)
-//        self.collectionView?.layer.borderWidth = 1.0
-//        self.collectionView?.layer.borderColor = UIColor.grayColor().CGColor
-//        self.collectionView?.layer.cornerRadius = 6.0
-//        self.collectionView?.layer.masksToBounds = true
-//        self.collectionView?.layer.shadowColor = UIColor.grayColor().CGColor
-//        self.collectionView?.layer.shadowOffset = CGSizeMake(4, 4)
-//        self.collectionView?.layer.shadowOpacity = 0.8
-//        self.collectionView?.layer.shadowRadius = 4.0
-        //        layout = MainCollectionViewLayout()
-        //        layout?.delegate = self
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: (view.bounds.size.width - 30)/2, height: ((view.bounds.size.width - 30)/2)/225.0*300.0)
         layout.minimumInteritemSpacing = 10
@@ -155,8 +149,6 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
 
         collectionView!.collectionViewLayout = layout
         self.collectionView!.registerClass(MainCollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-        //向上滑动隐藏navigationbar
-        //        navigationController?.hidesBarsOnSwipe = true
     }
     
     //添加navigationitem
@@ -199,7 +191,7 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
         return true
     }
     
-    //下拉刷新回调函数
+    //MARK:- 获取图片url逻辑
     func handleRefresh() {
         photos.removeAllObjects()
         //        清除所有图片，设置为第一页，刷新数据
@@ -209,23 +201,7 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
         populatePhotos()//开始获取图片
     }
     
-    //检查image url，必须符合某种规则，img1.mm131.com/pic
-    func checkImageUrl(imageUrl: String?)->Bool{
-        //        if imageUrl == nil{
-        //            return false
-        //        }
-        //
-        //        if !imageUrl!.componentsSeparatedByString(imageBaseUrl).isEmpty{
-        //            let array = imageUrl!.componentsSeparatedByString(imageBaseUrl)
-        //            if array.count > 1 && !array[1].isEmpty{
-        //                return true
-        //            }
-        //        }
-        //
-        //        return false
-        return true
-    }
-    
+    //转换图片url
     func transformUrl(urls: [String]){
         for url in urls{
             let urlBig = url.stringByReplacingOccurrencesOfString("bmiddle", withString: "large")
@@ -234,15 +210,7 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
         }
     }
     
-    //设置HUD
-//    func loadTextHUD(text: String, time: Float){
-//        let loadingNotification = MBProgressHUD.showHUDAddedTo(self.view, animated: true)
-//        loadingNotification.mode = MBProgressHUDMode.Text
-//        loadingNotification.minShowTime = time
-//        loadingNotification.labelText = text
-//    }
-    
-    //获取信息
+    //获取图片
     func populatePhotos(){
         if populatingPhotos{//正在获取，则返回
             print("return back")
@@ -262,9 +230,6 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
             
             if isSuccess == true{
                 //设置等待菊花
-                //                let loadingNotification = MBProgressHUD.showHUDAddedTo(self.view, animated: true)
-                //                loadingNotification.mode = MBProgressHUDMode.Indeterminate
-                //                loadingNotification.labelText = "加载中..."
                 HUD.textLabel.text = "加载中"
                 HUD.showInView(self.view, animated: true)
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)) {
@@ -276,10 +241,8 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
                         let lastItem = self.photos.count
                         //解析imageurl
                         for node in doc.css("img"){
-                            if self.checkImageUrl(node["src"]){
-                                urls.append(node["src"]!)
-                                self.isGot = true
-                            }
+                            urls.append(node["src"]!)
+                            self.isGot = true
                         }
                         
                         //怕没有获取到数据，做了个保护
@@ -300,7 +263,6 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
                     }
                 }
             }else{
-                //                let hud = JGProgressHUD(style: JGProgressHUDStyle.Light)
                 HUD.textLabel.text = "网络有问题，请检查网络"
                 HUD.indicatorView = JGProgressHUDErrorIndicatorView()
                 HUD.showInView(self.view, animated: true)
@@ -308,26 +270,12 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
             }
             
             //清除HUD
-            //            MBProgressHUD.hideHUDForView(self.view, animated: true)
             HUD.dismiss()
             self.populatingPhotos = false
         }
     }
     
-    //点击显示大图
-    //    override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-    //        performSegueWithIdentifier("BrowserPhoto", sender: (self.photos.objectAtIndex(indexPath.item) as! PhotoInfo))
-    //    }
-    
-    //给browser页面设置数据
-    //    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-    //        if segue.identifier == "BrowserPhoto"{
-    //            let temp = segue.destinationViewController as! PhotoBrowserCollectionViewController
-    //            temp.photoInfo = sender as! PhotoInfo
-    //            temp.currentType = self.currentType
-    //        }
-    //    }
-    
+    //MARK: - CollectionView
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: self.view.frame.width, height: topViewHeight + 10)
     }
@@ -360,17 +308,15 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! MainCollectionViewCell
         
-        //        let imageURL = (photos.objectAtIndex(indexPath.row) as! PhotoInfo).imageUrl
-
-        cell.layer.borderWidth = 1.2
-        cell.layer.borderColor = UIColor(red: 229/255, green: 230/255, blue: 234/255, alpha: 1).CGColor
-        cell.layer.cornerRadius = 15.0
-        cell.layer.masksToBounds = true
-//        cell.layer.shadowColor = UIColor.grayColor().CGColor
-//
-//        cell.layer.shadowOffset = CGSizeMake(2, 2)
-//        cell.layer.shadowOpacity = 1
-//        cell.layer.shadowRadius = 6.0
+        //设置圆角和阴影
+        cell.imageView.layer.cornerRadius = 15.0
+        cell.imageView.layer.masksToBounds = true
+        cell.layer.shadowColor = UIColor.darkGrayColor().CGColor
+        cell.layer.shadowOffset = CGSizeMake(2, 2)
+        cell.layer.shadowRadius = 4.0
+        cell.layer.shadowOpacity = 0.9
+        cell.layer.masksToBounds = false
+        cell.layer.shadowPath = UIBezierPath(roundedRect: cell.bounds, cornerRadius: 15.0).CGPath
 
         let imageURL = NSURL(string: (photos.objectAtIndex(indexPath.row) as! String))
         //复用时先置为nil，使其不显示原有图片
