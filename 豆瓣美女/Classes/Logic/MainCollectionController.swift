@@ -141,7 +141,7 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
         self.collectionView?.scrollsToTop = true
         
         //设置UICollectionViewFlowLayout
-        self.collectionView?.frame = CGRectMake(10, 0, self.view.frame.width - 20, self.view.frame.height)
+        self.collectionView?.frame = self.view.frame
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: (view.bounds.size.width - 30)/2, height: ((view.bounds.size.width - 30)/2)/225.0*300.0)
         layout.minimumInteritemSpacing = 10
@@ -277,7 +277,12 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
     
     //MARK: - CollectionView
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: self.view.frame.width, height: topViewHeight + 10)
+        return CGSize(width: self.view.frame.width, height: topViewHeight)
+    }
+    
+    //设置四周边距
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
+        return UIEdgeInsetsMake(10.0, 10.0, 0.0, 10.0)
     }
     
     override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
