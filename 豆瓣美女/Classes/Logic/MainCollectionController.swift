@@ -278,7 +278,6 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
     //MARK: - scrollView
     override func scrollViewDidScroll(scrollView: UIScrollView) {
         let offset = scrollView.contentOffset.y
-        print(offset)
         var alpha: CGFloat
         if offset >= HIDEOFFSET{
             alpha = 0
