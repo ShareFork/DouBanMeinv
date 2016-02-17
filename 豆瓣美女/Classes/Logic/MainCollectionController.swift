@@ -275,6 +275,20 @@ class MainCollectionController: UICollectionViewController, UICollectionViewDele
         }
     }
     
+    //MARK: - scrollView
+    override func scrollViewDidScroll(scrollView: UIScrollView) {
+        let offset = scrollView.contentOffset.y
+        print(offset)
+        var alpha: CGFloat
+        if offset >= HIDEOFFSET{
+            alpha = 0
+        }else{
+            alpha = PhotoUtil.MIN(1, two: (HIDEOFFSET - offset)/HIDEOFFSET)
+        }
+        navigationController?.navigationBar.alpha = alpha
+        menuView.alpha = alpha
+    }
+
     //MARK: - CollectionView
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: self.view.frame.width, height: topViewHeight)

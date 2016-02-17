@@ -28,4 +28,7 @@ class PhotoUtil {
             return .daxiong
         }
     }
+    class func MIN(one: CGFloat, two: CGFloat)-> CGFloat{
+        return one < two ? one : two
+    }
 }
