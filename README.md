@@ -2,6 +2,8 @@
 豆瓣美女
 
 抓取豆瓣美女图片，瀑布流显示。
+以前做过一个类似的[性感美女mm131-UICollectionView](https://github.com/luzefeng/mm131-UICollectionView)
+
 
 第三方用到了Alamofire、SDWebImage、Kanna、JGProgressHUD、[PhotoBrowser(自己写的^_^，欢迎star)](https://github.com/luzefeng/PhotoBrowser)、MJRefresh、ZNScrollMenu
 ##效果图
